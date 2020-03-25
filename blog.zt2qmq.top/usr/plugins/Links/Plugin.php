@@ -1,13 +1,24 @@
 <?php
 /**
- * 友情链接插件
+ * 友情链接插件【已修复越权漏洞、已存在表激活失败、表检测失败】
  * 
  * @package Links
  * @author Hanny
- * @version 1.0.4
+ * @version 1.1.2
+ * @dependence 14.10.10-*
  * @link http://www.imhan.com
  *
+ * 宿觞修复【2dph.com 2020-02-08】
+ * 修复已存在表激活失败、表检测失败
+ * 
  * 历史版本
+ * version 1.1.1 at 2014-12-14
+ * 修改支持Typecho 1.0
+ * 修正Typecho 1.0下不能删除的BUG
+ *
+ * version 1.1.0 at 2013-12-08
+ * 修改支持Typecho 0.9
+
  * version 1.0.4 at 2010-06-30
  * 修正数据表的前缀问题
  * 在Pattern里加上所有的数据表字段
@@ -103,29 +114,24 @@ class Links_Plugin implements Typecho_Plugin_Interface
 			}
 			return '建立友情链接数据表，插件启用成功';
 		} catch (Typecho_Db_Exception $e) {
-			 $code = $e->getCode();
-        if(('Mysql' == $type && 1050 == $code) ||
-                ('SQLite' == $type && ('HY000' == $code || 1 == $code))) {
-            try {
-                $script = 'SELECT `lid`, `name`, `url`, `sort`, `image`, `description`, `user`, `order` from `' . $prefix . 'links`';
-                $installDb->query($script, Typecho_Db::READ);
-                return '检测到友情链接数据表，友情链接插件启用成功';                    
-            } catch (Typecho_Db_Exception $e) {
-                $code = $e->getCode();
-                if(('Mysql' == $type && 1054 == $code) ||
-                        ('SQLite' == $type && ('HY000' == $code || 1 == $code))) {
-                    return Links_Plugin::linksUpdate($installDb, $type, $prefix);
-                }
-                throw new Typecho_Plugin_Exception('数据表检测失败，友情链接插件启用失败。错误号：'.$code);
-            }
-        } else if('Mysql' == $type && '42S01' == $code){
-            /* 如果数据库存在 */
-            $script = 'SELECT `lid`, `name`, `url`, `sort`, `image`, `description`, `user`, `order` from `' . $prefix . 'links`';
-            $installDb->query($script, Typecho_Db::READ);
-            return '检测到友情链接数据表，友情链接插件启用成功';
-        } else {
-            throw new Typecho_Plugin_Exception('数据表建立失败，友情链接插件启用失败。错误号：'.$code);
-        }
+			$code = $e->getCode();
+			if(('Mysql' == $type && (1050 == $code || '42S01' == $code)) ||
+					('SQLite' == $type && ('HY000' == $code || 1 == $code))) {
+				try {
+					$script = 'SELECT `lid`, `name`, `url`, `sort`, `image`, `description`, `user`, `order` from `' . $prefix . 'links`';
+					$installDb->query($script, Typecho_Db::READ);
+					return '检测到友情链接数据表，友情链接插件启用成功';					
+				} catch (Typecho_Db_Exception $e) {
+					$code = $e->getCode();
+					if(('Mysql' == $type && (1054 == $code || '42S22' == $code)) ||
+							('SQLite' == $type && ('HY000' == $code || 1 == $code))) {
+						return Links_Plugin::linksUpdate($installDb, $type, $prefix);
+					}
+					throw new Typecho_Plugin_Exception('数据表检测失败，友情链接插件启用失败。错误号：'.$code);
+				}
+			} else {
+				throw new Typecho_Plugin_Exception('数据表建立失败，友情链接插件启用失败。错误号：'.$code);
+			}
 		}
 	}
 	
@@ -145,7 +151,7 @@ class Links_Plugin implements Typecho_Plugin_Interface
 			return '检测到旧版本友情链接数据表，升级成功';
 		} catch (Typecho_Db_Exception $e) {
 			$code = $e->getCode();
-			if(('Mysql' == $type && 1060 == $code) ) {
+			if(('Mysql' == $type && (1060 == $code || '42S21' == $code))) {
 				return '友情链接数据表已经存在，插件启用成功';
 			}
 			throw new Typecho_Plugin_Exception('友情链接插件启用失败。错误号：'.$code);
@@ -193,6 +199,7 @@ class Links_Plugin implements Typecho_Plugin_Interface
 		
 		/** 提交按钮 */
 		$submit = new Typecho_Widget_Helper_Form_Element_Submit();
+		$submit->input->setAttribute('class', 'btn primary');
 		$form->addItem($submit);
 		$request = Typecho_Request::getInstance();
 
