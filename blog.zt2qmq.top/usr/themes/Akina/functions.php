@@ -7,7 +7,7 @@ function themeConfig($form) {
     $sub = new Typecho_Widget_Helper_Form_Element_Text('sub', NULL,'个人博客', _t('网站副标题'), _t('默认内容"个人博客"'));
     $form->addInput($sub);
 	
-    $headerinfo = new Typecho_Widget_Helper_Form_Element_Text('headerinfo', NULL,'生命不息，编程不止', _t('头部内容'), _t('首页头部介绍'));
+    $headerinfo = new Typecho_Widget_Helper_Form_Element_Text('headerinfo', NULL,'Be An Interesting Soul', _t('头部内容'), _t('首页头部介绍'));
     $form->addInput($headerinfo);
 	
     $NOTICE = new Typecho_Widget_Helper_Form_Element_Text('NOTICE', NULL,'FROM 2020.03.17，记录生活记录你♥', _t('公告内容'), _t('首页公告内容'));
