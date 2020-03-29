@@ -22,6 +22,8 @@ define('__TYPECHO_ADMIN_DIR__', '/admin/');
 /** 定义gravatar源 */
 define('__TYPECHO_GRAVATAR_PREFIX__', 'https://cdn.v2ex.com/gravatar/');
 
+/** 开启HTTPS */
+define('__TYPECHO_SECURE__',true);
 
 /** 设置包含路径 */
 @set_include_path(get_include_path() . PATH_SEPARATOR .

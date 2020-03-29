@@ -176,7 +176,7 @@ if($sticky && $this->is('index') || $this->is('front')){
 				<div class="p-time">
 				<i class="iconfont">&#xe604;</i> <?php $this->date('Y-n-j'); ?><?php if(Postviews($this)>=1000) echo"<i class='iconfont hotpost' style='margin-left: 5px;'>&#xe618;</i>" ?>
 				</div>
-				<p><?php $this->excerpt(15, '...'); ?></p>
+				<p><?php $this->excerpt(50, '...'); ?></p>
 				<!-- 文章下碎碎念 -->
 				<footer class="entry-footer">
 					<div class="post-more">
